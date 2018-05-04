@@ -6,10 +6,15 @@ def loadRawData(name='NKE'):
     raw_data = raw_data.rename(index=str, columns={"Date":"date","Open":"open","High":"high","Low":"low","Close":"close","Adj Close":"adjclose","Volume":"volume"})
     return raw_data
 
-def loadRawDataByAddress(address):
+def loadRawDataByAddress(address , removeList=[]):
     raw_data = pd.read_csv(address)
     raw_data = raw_data.rename(index=str, columns={"Date":"date","Open":"open","High":"high","Low":"low","Close":"close","Adj Close":"adjclose","Volume":"volume"})
-    return raw_data
+    try:
+        raw_data = raw_data.drop(columns=removeList)
+        return raw_data
+    except:
+        print("nothing removed")
+        return raw_data
 
 def adjustData(name='NKE'):
     data = loadRawData(name)
