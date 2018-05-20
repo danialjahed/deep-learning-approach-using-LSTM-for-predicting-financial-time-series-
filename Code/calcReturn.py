@@ -13,7 +13,7 @@ def periodizePrices(X,period):
 
 
 def calcReturn(predictedReturn,prices,currentPrice=None,period=1):
-    Invesment = 10000
+    Invesment = 1000
     fee = 0.1
     
     share = 0
@@ -25,7 +25,9 @@ def calcReturn(predictedReturn,prices,currentPrice=None,period=1):
     prices =  periodizePrices(prices,period)
 
     assert len(prices)==len(periods)
-    for i in range(len(prices)): 
+    print(len(prices))
+    print(periods.head())
+    for i in range(len(prices)):
         if periods[i] == 1:
             if share == 0:
                 share = (capital-fee)/currentPrice
@@ -49,7 +51,7 @@ def calcReturn(predictedReturn,prices,currentPrice=None,period=1):
     if share == 0:
         return (capital,seqDecisions,capital/Invesment)
     elif share != 0:
-        return (share * prices[-1],seqDecisions,(share * prices[-1])/Invesment)
+        return (share * prices[len(prices)-1],seqDecisions,(share * prices[len(prices)-1])/Invesment)
 
 
 

@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score,precision_score,recall_score,precisio
 from generateWindows import Windowing 
 import pickle as pk
 import os
+import copy
 
 class ModelEval:
 
@@ -134,10 +135,11 @@ class ModelEval:
                     return (False, 'name is empty in eval model')
             if doItSaveModelResult:
                 if name != None:
-                    self.savedTrainedModel.append({name:{'type':'keras', 'model':model,'metrics':self.metrics}})
+                    self.savedTrainedModel.append({name:{'type':'sklearn', 'model':model,'metrics':self.metrics}})
                 else:
                     return (False, 'name is empty in eval model')
             
+            # return (True,model,self.Trade,model.predict(self.Trade.drop(columns=['y'])),self.metrics)
             return (True,model,self.Trade,self.metrics)
         
         else:
@@ -149,12 +151,13 @@ class ModelEval:
     def kerasEvalModel(self,model=None,name=None,doItSaveModel=False,doItSaveModelResult=False,Train_batch_size=15,Test_batch_size=100, epochs=100):
         try:
             if model != None:
-                model.fit(self.X_train,self.Y_train,batch_size=Train_batch_size, epochs=epochs)
+                model.fit(self.X_train,self.Y_train,batch_size=Train_batch_size, epochs=epochs , verbose=0)
                 prediction = model.evaluate(self.X_test, self.Y_test, batch_size=Test_batch_size)
                 #################fill metrics####################################################
                 # for (i,j) in (model.metrics_names,prediction):
                 #     self.metrics[i] = j
-                
+                for i in range(len(model.metrics_names)):
+                    self.metrics[model.metrics_names[i]] = prediction[i]
                 print(self.metrics)
                 if doItSaveModel:
                     if name != None:
@@ -167,6 +170,7 @@ class ModelEval:
                     else:
                         return (False, 'name is empty in eval model')
                 
+                # return (True,model,self.Trade,model.predict(self.Trade.drop(columns=['y'])),self.metrics)
                 return (True,model,self.Trade,self.metrics)
             
             else:
@@ -182,9 +186,9 @@ class ModelEval:
 
             if name in self.savedModel:
                 if framework == 'sklearn':
-                    return self.sklearnEvalModel()
+                    return self.sklearnEvalModel(model=self.savedModel[name],name=name)
                 elif framework == 'keras':
-                    return self.kerasEvalModel()
+                    return self.kerasEvalModel(model=self.savedModel[name],name=name)
                 else:
                     print(False,"framework error")    
             else:
